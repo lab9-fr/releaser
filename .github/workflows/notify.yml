@@ -1,0 +1,22 @@
+name: Notify Archive on Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  notify-archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send release tag to archive
+        env:
+          PAT: ${{ secrets.ARCHIVE_PAT }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $PAT" \
+            -H "Content-Type: application/json" \
+            -d '{"ref": "${{ github.event.release.tag_name }}"}' \
+            https://api.github.com/repos/lab9-fr/archive/actions/workflows/aggregate.yml/dispatches
